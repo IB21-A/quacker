@@ -3,15 +3,18 @@ from django.db import models
 
 
 class User(AbstractUser):
-    # posts
+    username = models.CharField(max_length=40, unique=True)
+    profile_photo = models.URLField(blank=True)
     # likes
     # following
     
-# class Post()
-#   author
-#   body
-#   date
-#   likes
+    def get_posts(self):
+        return self.posts.all()
+    
+class Post():
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="posts", null=True)
+    body = models.TextField(blank=False, null=False, max_length=280)
+    
 
 
 # class Like()
@@ -19,7 +22,7 @@ class User(AbstractUser):
 #   post
 #   date
 
-# class Follow()
+# # class Follow()
 #   Follower
 #   Followee
 #   date

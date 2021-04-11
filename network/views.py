@@ -8,6 +8,7 @@ from .models import User
 
 
 def index(request):
+    print(request)
     return render(request, "network/index.html")
 
 
