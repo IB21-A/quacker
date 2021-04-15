@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator
 
 from .models import User, Post
 from .forms import NewPostForm
@@ -21,12 +22,17 @@ def index(request):
     
     # quack(request)  # Used to populate the feed with quacks
     post_form = NewPostForm
+    
     posts = Post.objects.all()
+    paginator = Paginator(posts, 5) # Show 5 posts per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     
     # organize posts in chronological order
     posts = posts.order_by("-timestamp").all()
     return render(request, "network/index.html", {
         "posts": posts,
+        "page_obj": page_obj,
         "post_form": post_form
     })
     
