@@ -1,0 +1,13 @@
+
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <script src="{% static 'network/index.js' %}"></script>
+    <h1>{{profile.username}}'s Profile</h1>
+
+    <div># Following  | # Followers </div>
+    <div><h1>Posts</h1></div>
+
+
+{% endblock %}

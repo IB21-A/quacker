@@ -1,15 +1,55 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
-from .models import User
-
+from .models import User, Post
+from .forms import NewPostForm
 
 def index(request):
-    print(request)
-    return render(request, "network/index.html")
+    if request.method == "POST":
+        user = User.objects.get(id=request.user.pk)
+        initial_data = Post(author=user)
+        post_form = NewPostForm(request.POST, instance=initial_data)
+        if post_form.is_valid():
+            new_post = post_form.save()
+            return HttpResponseRedirect(reverse("index"))
+    
+    # quack(request)  # Used to populate the feed with quacks
+    post_form = NewPostForm
+    posts = Post.objects.all()
+    
+    # organize posts in chronological order
+    posts = posts.order_by("-timestamp").all()
+    return render(request, "network/index.html", {
+        "posts": posts,
+        "post_form": post_form
+    })
+    
+    
+
+# Make posts from back end
+def quack(request):
+    user = User.objects.get(pk=2)
+    new_post = Post(author=user, body="QUACK!")
+    new_post.save()
+    
+    
+@login_required
+def profile_view(request, username):
+    try:
+        profile = User.objects.get(username=username)
+    except User.DoesNotExist:
+        raise Http404("Profile does not exist")  # TODO make a proper 404
+    
+    return render(request, "network/profile.html",{
+        "profile": profile
+    })
+    
 
 
 def login_view(request):
@@ -62,3 +102,47 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+
+## API Views:
+
+def posts(request, type):
+    print(type)
+    type = "all" # Remove as you add this usage to front end
+    # print(type)
+    if type == "all":
+        posts = Post.objects.all()
+    
+    
+    # organize posts in chronological order
+    posts = posts.order_by("-timestamp").all()
+    return JsonResponse([post.serialize() for post in posts], safe=False)
+
+
+@csrf_exempt
+@login_required
+def publish(request):
+    # publish post must be via POST
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+    
+    
+    data = json.loads(request.body)
+    
+    # Get contents of post
+    body = data.get("body", "")
+    user = User.objects.get(id=request.user.pk)
+    # initial_data = Post(author=user, body=body)
+    # post_form = NewPostForm(instance=initial_data)
+    # print(body)
+    post = Post(author=user, body=body)
+    post.save()
+
+    
+    return JsonResponse({"Received": "POST request received."}, status=200)
+    
+    # return JsonResponse({"error": "Something went wrong"}, status=400)
+        
+    
+    
+    

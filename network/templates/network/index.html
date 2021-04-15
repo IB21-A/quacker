@@ -1,5 +1,36 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
-    TODO
+    <script src="{% static 'network/index.js' %}"></script>
+    <div id="post-form">
+        <!-- <form action="" method="post">
+            {% csrf_token %}
+            {{ post_form.body }}
+            <input type="submit" value="Post">
+        </form> -->
+        <form action="" method="post">
+            {% csrf_token %}
+            <textarea class="form-control" id="post-body" placeholder="Write your post here!"></textarea>
+            <input id="publish" type="submit" class="btn btn-primary" value="Publish"/>
+        </form>
+
+    </div>
+
+    {% for post in posts %}
+    <div class="post-wrapper">
+        <a href="{%url 'profile' post.author.username %}">{{ post.author }}</a> says {{ post.body }} on {{ post.timestamp }}
+    </div>
+    {% empty %}
+    <div>
+        No posts!
+    </div>
+    {% endfor %}
+
+    <hr>
+
+    <!--Javascript Rendered Posts -->
+    <div id="js"></div> 
+
+
 {% endblock %}
