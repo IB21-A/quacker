@@ -1,3 +1,23 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+.block-body {
+    width: 100%;
+    max-width: 700px;
+
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
 .post-wrapper {
     border: 1px solid magenta;
+}
+
+.heart {
+    color: red;
 }

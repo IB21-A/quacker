@@ -11,6 +11,12 @@ class User(AbstractUser):
     def get_posts(self):
         return self.posts.all()
     
+    def get_followers(self):
+        return self.followers.all()
+    
+    def get_following(self):
+        return self.following.all()
+    
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="posts", null=True)
     body = models.TextField(blank=False, null=False, max_length=280)
@@ -24,16 +30,16 @@ class Post(models.Model):
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p")
         }
     
+    
+class Follow(models.Model):
+  follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="following")
+  followee = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followers")
+  timestamp = models.DateTimeField(auto_now_add=True)
+
 
 
 # class Like()
 #   user
 #   post
 #   date
-
-# # class Follow()
-#   Follower
-#   Followee
-#   date
-
 

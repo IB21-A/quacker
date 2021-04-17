@@ -6,8 +6,14 @@
     <script src="{% static 'network/index.js' %}"></script>
     <h1>{{profile.username}}'s Profile</h1>
 
-    <div># Following  | # Followers </div>
+    <div>{{ following.count }} Following  | {{ followers.count }} Followers </div>
     <div><h1>Posts</h1></div>
-
+    {% for post in posts %}
+        <div class="post-wrapper">
+            <a href="{%url 'profile' post.author.username %}">{{ post.author }}</a> says {{ post.body }} on {{ post.timestamp }}
+        </div>
+    {% empty %}
+        <div>This user has not made any quacks</div>
+    {% endfor %}
 
 {% endblock %}

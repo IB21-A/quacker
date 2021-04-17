@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 
-from .models import User, Post
+from .models import User, Post, Follow
 from .forms import NewPostForm
 
 def index(request):
@@ -52,8 +52,13 @@ def profile_view(request, username):
     except User.DoesNotExist:
         raise Http404("Profile does not exist")  # TODO make a proper 404
     
+    posts = Post.objects.filter(author=profile).order_by("-timestamp").all()
+    
     return render(request, "network/profile.html",{
-        "profile": profile
+        "profile": profile,
+        "followers": profile.get_followers(),
+        "following": profile.get_following(),
+        "posts": posts
     })
     
 
@@ -114,7 +119,7 @@ def register(request):
 
 def posts(request, type):
     print(type)
-    type = "all" # Remove as you add this usage to front end
+    # Remove as you add this usage to front end
     # print(type)
     if type == "all":
         posts = Post.objects.all()
