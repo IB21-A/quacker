@@ -38,6 +38,37 @@ def index(request):
         "data_title": "index"
     })
     
+
+# TODO there HAS to be a better way to do this, I'm just too tired to think of it right now.
+# For now, getting a minimum viable product going here, displaying posts from following
+def following_posts_view(request):
+    if request.method == "POST":
+        user = User.objects.get(id=request.user.pk)
+        initial_data = Post(author=user)
+        post_form = NewPostForm(request.POST, instance=initial_data)
+        if post_form.is_valid():
+            new_post = post_form.save()
+            return HttpResponseRedirect(reverse("index"))
+    
+    # quack(request)  # Used to populate the feed with quacks
+    post_form = NewPostForm
+    
+    user = User.objects.get(pk=request.user.pk)
+    posts = user.get_following_posts()
+    
+    # organize posts in chronological order
+    posts = posts.order_by("-timestamp").all()
+    
+    paginator = Paginator(posts, 5) # Show 5 posts per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, "network/index.html", {
+        "posts": posts,
+        "page_obj": page_obj,
+        "post_form": post_form,
+        "data_title": "index"
+    })
     
 
 # Make posts from back end
@@ -118,6 +149,24 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+    
+    
+def get_posts(request, type):
+
+    if type == "all":
+        posts = Post.objects.all()
+       
+    if type == "following":
+        user = User.objects.get(pk=request.user.pk)
+        posts = user.get_following_posts()
+    
+    
+    # organize posts in chronological order
+    posts = posts.order_by("-timestamp").all()
+    return posts
+    
+    
+    
 
 
 ## API Views:
@@ -149,6 +198,10 @@ def posts(request, type):
 
     if type == "all":
         posts = Post.objects.all()
+       
+    if type == "following":
+        user = User.objects.get(pk=request.user.pk)
+        posts = user.get_following_posts()
     
     
     # organize posts in chronological order

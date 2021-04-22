@@ -21,7 +21,11 @@ class User(AbstractUser):
         return self.followers.all()
     
     def get_following(self):
-        return self.following.all()
+        return self.following.all().values_list('followee', flat=True)
+    
+    def get_following_posts(self):
+        following = self.get_following()
+        return Post.objects.filter(author__in=following)
     
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="posts", null=True)
