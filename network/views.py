@@ -146,9 +146,7 @@ def set_follow(request, username):
         
 
 def posts(request, type):
-    print(type)
-    # Remove as you add this usage to front end
-    # print(type)
+
     if type == "all":
         posts = Post.objects.all()
     
