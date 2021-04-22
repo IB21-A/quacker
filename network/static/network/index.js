@@ -1,7 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
-    document.querySelector("#publish").addEventListener('click', event => publish_post(event));
-    loadPosts('all');
-    console.log('page loaded!');
+    if (document.querySelector("body").dataset.title == "index") {
+        document.querySelector("#publish").addEventListener('click', event => publishPost(event));
+        loadPosts('all');
+        console.log('page loaded!');
+    }
+
+    if (document.querySelector("body").dataset.title == "profile") {
+        console.log('do profile stuff');
+        document.querySelector("#btn-follow").addEventListener('click', event => toggleFollow(event));
+    }
 });
 
 function loadPosts(type="all") {
@@ -26,11 +33,19 @@ function renderPost(post) {
   <div class="post-timestamp">${post.timestamp}</div>
   `;
 
+    // <div class="post-wrapper">
+    // <div class="post-profile-photo"><img src="{% static 'network/img/ducky_icon.gif' %}" alt="Profile Photo"></div>
+    // <div class="post-content">
+    //     <a href="{%url 'profile' post.author.username %}">{{ post.author }}</a> says {{ post.body }} on {{ post.timestamp }}
+    //     <div class="heart"><i class="fas fa-heart"><i class="far fa-heart"></i></i></div>
+    // </div>
+    // </div>
+
   document.querySelector('#js').append(content);
 }
 
 
-function publish_post(event) {
+function publishPost(event) {
 	event.preventDefault(); // prevents form submission reloading current page
 
 	fetch("/posts", {
@@ -44,4 +59,35 @@ function publish_post(event) {
             loadPosts();
 	});
 
+}
+
+function toggleFollow(event) {
+    event.preventDefault();
+
+    username = document.querySelector("#username").innerHTML;
+    fetch(`/follow/${username}`, {
+        method: "PUT"})
+        .then(
+            response => response.json()
+        )
+        .then(status => {
+            console.log(status);
+            updateFollowButton(status);
+            // Display a toast?
+        });
+}
+
+function updateFollowButton(status) {
+    followButton = document.querySelector('#btn-follow');
+    if (status.following === true) {
+        followButton.classList.add('btn-secondary');
+        followButton.classList.remove('btn-primary');
+        followButton.innerHTML = 'Unfollow';
+        return;
+    }
+
+    followButton.innerHTML = 'Follow';
+    followButton.classList.add('btn-primary');
+    followButton.classList.remove('btn-secondary');
+    return;
 }

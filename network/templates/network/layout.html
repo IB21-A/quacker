@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
         <link href="{% static 'network/styles.css' %}" rel="stylesheet">
     </head>
-    <body>
+    <body data-title="{{ data_title }}">
 
         <nav class="navbar navbar-expand-sm navbar-light bg-light">
             <a class="navbar-brand" href="#">Network</a>
@@ -19,7 +19,7 @@
             
           
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mr-auto align-items-end">
+              <ul class="navbar-nav ml-auto align-items-end">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="#"><strong>{{ user.username }}</strong></a>

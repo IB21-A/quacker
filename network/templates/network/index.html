@@ -2,9 +2,9 @@
 {% load static %}
 
 {% block body %}
+<script src="{% static 'network/index.js' %}"></script>
 <div class="block-body">
     
-        <script src="{% static 'network/index.js' %}"></script>
         <div id="post-form">
             <!-- <form action="" method="post">
                 {% csrf_token %}
@@ -21,8 +21,17 @@
     
         {% for post in page_obj %}
         <div class="post-wrapper">
-            <a href="{%url 'profile' post.author.username %}">{{ post.author }}</a> says {{ post.body }} on {{ post.timestamp }}
-            <div class="heart"><i class="fas fa-heart"><i class="far fa-heart"></i></i></div>
+            <div class="post-profile-photo"><img src="{% static 'network/img/ducky_icon.gif' %}" alt="Profile Photo"></div>
+            <div class="post-content">
+                <div class="post-head">
+                    <span class="post-author"><a href="{%url 'profile' post.author.username %}">{{ post.author }}</a></span>
+                    <span class="post-timestamp">{{ post.timestamp }}</span>
+                </div>
+                <div class="post-body">{{ post.body }}</div>
+                <div class="post-footer">
+                    <div class="heart" data-id={{ post.id }} ><i class="fas fa-heart"><i class="far fa-heart"></i></i></div>
+                </div>
+            </div>
         </div>
         {% empty %}
         <div>

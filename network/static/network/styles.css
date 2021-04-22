@@ -8,14 +8,50 @@ body {
 
 .block-body {
     width: 100%;
-    max-width: 700px;
+    max-width: 500px;
 
     margin: 0 auto;
     padding: 0 1rem;
 }
 
+#post-form {
+    margin: .5rem auto;
+    text-align: right;
+}
+
+#publish {
+    margin-top: .2rem;
+}
+
+.post-wrapper + .post-wrapper {
+    margin-top: .5rem;
+}
+
 .post-wrapper {
     border: 1px solid magenta;
+    display: flex;
+    flex-direction: row;
+}
+
+.post-wrapper > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.post-profile-photo {
+    max-width: 50px;
+
+}
+
+.post-profile-photo img {
+    border-radius: 100%;
+
+}
+
+.post-content {
+    border: 1px solid dodgerblue;
+    padding: 0 .25rem;
+    width: 100%;
 }
 
 .heart {

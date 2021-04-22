@@ -24,16 +24,18 @@ def index(request):
     post_form = NewPostForm
     
     posts = Post.objects.all()
+    # organize posts in chronological order
+    posts = posts.order_by("-timestamp").all()
+    
     paginator = Paginator(posts, 5) # Show 5 posts per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    # organize posts in chronological order
-    posts = posts.order_by("-timestamp").all()
     return render(request, "network/index.html", {
         "posts": posts,
         "page_obj": page_obj,
-        "post_form": post_form
+        "post_form": post_form,
+        "data_title": "index"
     })
     
     
@@ -47,10 +49,11 @@ def quack(request):
     
 @login_required
 def profile_view(request, username):
+    user = User.objects.get(id=request.user.pk)
     try:
         profile = User.objects.get(username=username)
     except User.DoesNotExist:
-        raise Http404("Profile does not exist")  # TODO make a proper 404
+        raise Http404("Profile does not exist")
     
     posts = Post.objects.filter(author=profile).order_by("-timestamp").all()
     
@@ -58,7 +61,9 @@ def profile_view(request, username):
         "profile": profile,
         "followers": profile.get_followers(),
         "following": profile.get_following(),
-        "posts": posts
+        "is_following": user.is_following(profile),
+        "posts": posts,
+        "data_title": "profile"
     })
     
 
@@ -117,6 +122,29 @@ def register(request):
 
 ## API Views:
 
+# Creates or deletes a follow
+@csrf_exempt
+@login_required
+def set_follow(request, username):
+    try:
+        followee = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found."}, status=404)
+    
+    if request.method == "PUT":
+        user = User.objects.get(id=request.user.pk)
+        if user.is_following(followee):
+            try:
+                follow = Follow.objects.get(followee=followee, follower=user).delete()
+            except Follow.DoesNotExist:
+                return JsonResponse({"error": "No such follow exists"}, status=404)
+                
+            return JsonResponse({"message": "Unfollowed successfully", "following": False}, status=201)
+            
+        follow = Follow.objects.create(followee=followee, follower=user)
+        return JsonResponse({"message": "Followed successfully", "following": True}, status=201)
+        
+
 def posts(request, type):
     print(type)
     # Remove as you add this usage to front end
@@ -154,6 +182,3 @@ def publish(request):
     
     # return JsonResponse({"error": "Something went wrong"}, status=400)
         
-    
-    
-    

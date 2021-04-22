@@ -1,12 +1,20 @@
-
 {% extends "network/layout.html" %}
 {% load static %}
 
 {% block body %}
-    <script src="{% static 'network/index.js' %}"></script>
-    <h1>{{profile.username}}'s Profile</h1>
+<script src="{% static 'network/index.js' %}"></script>
+    <h1><span id="username">{{profile.username}}</span>'s Profile</h1>
 
     <div>{{ following.count }} Following  | {{ followers.count }} Followers </div>
+    
+    {% if request.user != profile %}
+        {% if is_following %}
+        <button id="btn-follow" class="btn btn-secondary" type="submit" name="unfollow" value="Unfollow">Unfollow</button>
+        {% else %}
+        <button id="btn-follow" class="btn btn-primary" type="submit" name="follow" value="Follow">Follow</button>
+        {% endif %}
+    {% endif %}
+
     <div><h1>Posts</h1></div>
     {% for post in posts %}
         <div class="post-wrapper">

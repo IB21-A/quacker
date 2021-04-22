@@ -6,7 +6,13 @@ class User(AbstractUser):
     username = models.CharField(max_length=40, unique=True)
     profile_photo = models.URLField(blank=True, null=True, default=None)
     # likes
-    # following
+    
+    def is_following(self, followee):
+        if self.following.filter(follower=self, followee=followee):
+            return True
+        
+        return False
+        
     
     def get_posts(self):
         return self.posts.all()
@@ -32,10 +38,12 @@ class Post(models.Model):
     
     
 class Follow(models.Model):
-  follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="following")
-  followee = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followers")
-  timestamp = models.DateTimeField(auto_now_add=True)
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="following")
+    followee = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followers")
+    timestamp = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.follower.username} followed {self.followee.username} at {self.timestamp}"
 
 
 # class Like()
