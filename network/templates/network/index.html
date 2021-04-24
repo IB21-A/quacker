@@ -1,5 +1,6 @@
 {% extends "network/layout.html" %}
 {% load static %}
+{% load network_extras %}
 
 {% block body %}
 <script src="{% static 'network/index.js' %}"></script>
@@ -29,7 +30,13 @@
                 </div>
                 <div class="post-body">{{ post.body }}</div>
                 <div class="post-footer">
-                    <div class="heart" data-id={{ post.id }} ><i class="fas fa-heart"><i class="far fa-heart"></i></i></div>
+                    <div class="heart" data-id={{ post.id }} >
+                        {% if post|is_liked_by_user:user %}
+                            <i class="fas fa-heart"></i>
+                        {% else %}
+                            <i class="far fa-heart"></i>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

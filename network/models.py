@@ -27,6 +27,10 @@ class User(AbstractUser):
         following = self.get_following()
         return Post.objects.filter(author__in=following)
     
+    def likes_post(self, post):
+        return Like.objects.filter(user=self, post=post)
+        
+    
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="posts", null=True)
     body = models.TextField(blank=False, null=False, max_length=280)
@@ -39,6 +43,14 @@ class Post(models.Model):
             "body": self.body,
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p")
         }
+        
+    def __str__(self):
+        TRUNCATE_LENGTH = 45
+        text = self.body
+        if (len(text) > TRUNCATE_LENGTH):
+            text = text[0:TRUNCATE_LENGTH] + "..."
+            
+        return f"{self.id}: {text}"
     
     
 class Follow(models.Model):
@@ -50,8 +62,11 @@ class Follow(models.Model):
         return f"{self.follower.username} followed {self.followee.username} at {self.timestamp}"
 
 
-# class Like()
-#   user
-#   post
-#   date
+class Like(models.Model):
+  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="likes", null=False)
+  post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes", null=False)
+  timestamp = models.DateTimeField(auto_now_add=True)
+  
+  def __str__(self):
+      return f"{self.user} liked post {self.post.id} by {self.post.author} on {self.timestamp}"
 
