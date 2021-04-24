@@ -13,6 +13,8 @@ urlpatterns = [
     
     # API Routes
     path("posts", views.publish, name="publish"),
+    path("posts/like/<int:post_id>", views.like_post, name="like"),
     path("posts/<str:type>", views.posts, name="posts"),
     path("follow/<str:username>", views.set_follow, name="follows")
+    
 ]

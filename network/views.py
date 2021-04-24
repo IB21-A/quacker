@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 
-from .models import User, Post, Follow
+from .models import User, Post, Follow, Like
 from .forms import NewPostForm
 
 def index(request):
@@ -192,6 +192,28 @@ def set_follow(request, username):
             
         follow = Follow.objects.create(followee=followee, follower=user)
         return JsonResponse({"message": "Followed successfully", "following": True}, status=201)
+    
+@csrf_exempt
+@login_required
+def like_post(request, post_id):
+    print("liking post")
+    
+    if request.method != "PUT":
+        return JsonResponse({"error": "PUT request required."}, status=400)
+    
+    user = User.objects.get(id=request.user.pk)
+    # TODO add try/catch to post exists
+    post = Post.objects.get(id=post_id)
+    
+    if user.likes_post(post):
+        try:
+            like = Like.objects.get(user=user, post=post).delete()
+        except Like.DoesNotExist:
+                return JsonResponse({"error": "No such like exists"}, status=404)
+        return JsonResponse({"message": "Unliked post successfully", "liked": False}, status=201)
+        
+    like = Like.objects.create(user=user, post=post)
+    return JsonResponse({"message": "Liked post successfully", "liked": True}, status=201)
         
 
 def posts(request, type):

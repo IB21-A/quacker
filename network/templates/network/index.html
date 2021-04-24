@@ -30,7 +30,7 @@
                 </div>
                 <div class="post-body">{{ post.body }}</div>
                 <div class="post-footer">
-                    <div class="heart" data-id={{ post.id }} >
+                    <div class="heart" data-postid={{ post.id }} >
                         {% if post|is_liked_by_user:user %}
                             <i class="fas fa-heart"></i>
                         {% else %}

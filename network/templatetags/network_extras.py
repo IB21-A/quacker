@@ -8,5 +8,4 @@ register = template.Library()
 # Usage: post|is_liked_by_user:user
 @register.filter(name='is_liked_by_user')
 def is_liked_by_user(post, user):
-    print(post, user.likes_post(post))
     return user.likes_post(post)
