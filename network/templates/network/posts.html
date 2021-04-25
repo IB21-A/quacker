@@ -1,26 +1,8 @@
-{% extends "network/layout.html" %}
 {% load static %}
+{% block body %}
 {% load network_extras %}
 
-{% block body %}
-<script src="{% static 'network/index.js' %}"></script>
-<div class="block-body">
-    
-        <div id="post-form">
-            <!-- <form action="" method="post">
-                {% csrf_token %}
-                {{ post_form.body }}
-                <input type="submit" value="Post">
-            </form> -->
-            <form action="" method="post">
-                {% csrf_token %}
-                <textarea class="form-control" id="post-body" placeholder="Write your post here!"></textarea>
-                <input id="publish" type="submit" class="btn btn-primary" value="Publish"/>
-            </form>
-    
-        </div>
-    
-        {% for post in page_obj %}
+{% for post in page_obj %}
         <div class="post-wrapper">
             <div class="post-profile-photo"><img src="{% static 'network/img/ducky_icon.gif' %}" alt="Profile Photo"></div>
             <div class="post-content">
@@ -100,16 +82,4 @@
               {% endif %}
             </ul>
           </nav>
-    
-        <hr>
-    
-        <!--Javascript Rendered Posts -->
-        <!-- <div id="js"></div> -->
-        <div class="test">
-            {% include "network/posts.html" %}
-            
-        </div>
-    
-</div>
-
 {% endblock %}

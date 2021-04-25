@@ -15,12 +15,12 @@ body {
 }
 
 #post-form {
-    margin: .5rem auto;
+    margin: 1rem auto;
     text-align: right;
 }
 
 #publish {
-    margin-top: .2rem;
+    margin-top: .7rem;
 }
 
 .post-wrapper + .post-wrapper {

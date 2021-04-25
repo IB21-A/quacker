@@ -27,7 +27,7 @@ def index(request):
     # organize posts in chronological order
     posts = posts.order_by("-timestamp").all()
     
-    paginator = Paginator(posts, 5) # Show 5 posts per page
+    paginator = Paginator(posts, 10) # Show 10 posts per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
