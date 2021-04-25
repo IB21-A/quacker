@@ -8,7 +8,7 @@
             <div class="post-content">
                 <div class="post-head">
                     <span class="post-author"><a href="{%url 'profile' post.author.username %}">{{ post.author }}</a></span>
-                    <span class="post-timestamp">{{ post.timestamp }}</span>
+                    <!-- <span class="post-timestamp">{{ post.timestamp }}</span> -->
                     <span class="post-timestamp">{{ post.timestamp|time_since_or_date }}</span>
                 </div>
                 <div class="post-body">{{ post.body }}</div>
