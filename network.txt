@@ -1,9 +1,33 @@
-Humanize timestamp- maybe set it to either humanize or provide a date & time depending on how old it is? Or just a date?
 
 Finish CSS
+
+
 
 Add edit option to users own posts
 
 
+Create back end logic to edit post
+Create API to interface with front end
+Create front end ability to edit post
+	Take existing post, replace it with textbox with the existing content
+	save button to update via back end API
+	On update success, change textbox back to regular text with the new post contents & remove save button
+
+	Add collapsable option edit or delete post
+
+
+
+
+
 check on project requirements
+
+
+
+
+
+
+
+
+Zelle Quickpay
+
 

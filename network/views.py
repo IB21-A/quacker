@@ -258,5 +258,25 @@ def publish(request):
     
     return JsonResponse({"Received": "POST request received."}, status=200)
     
-    # return JsonResponse({"error": "Something went wrong"}, status=400)
-        
+
+@csrf_exempt
+@login_required
+def edit_post(request, post_id):
+    # edit must be done via put
+    if request.method != "PUT":
+        return JsonResponse({"error": "PUT request required."}, status=400)
+    
+    try:
+        post = Post.objects.get(pk=post_id, author=request.user.pk,)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Incorrect post ID or invalid user"}, status=400)
+    
+    data = json.loads(request.body)
+    new_body = data.get("body", "")
+    post.body = new_body
+    
+    post.save()
+    print(post)
+    
+    return JsonResponse(post.serialize(), safe=False)
+    # return JsonResponse({"Received": "POST request received."}, status=200)

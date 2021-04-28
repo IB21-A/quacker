@@ -51,12 +51,13 @@ function renderPost(post) {
     // </div>
     // </div>
 
-  document.querySelector('#js').append(content);
+//   document.querySelector('#js').append(content);
 }
 
 
+//  Currently not in use
 function publishPost(event) {
-	event.preventDefault(); // prevents form submission reloading current page
+	// event.preventDefault(); // prevents form submission reloading current page
 
 	fetch("/posts", {
 		method: "POST",
