@@ -3,7 +3,7 @@
 {% load network_extras %}
 
 {% for post in page_obj %}
-        <div class="post-wrapper">
+        <div class="post-wrapper" data-postid={{ post.id }} >
             <div class="post-profile-photo"><img src="{% static 'network/img/ducky_icon.gif' %}" alt="Profile Photo"></div>
             <div class="post-content">
                 <div class="post-head">
@@ -13,7 +13,7 @@
                 </div>
                 <div class="post-body">{{ post.body }}</div>
                 <div class="post-footer">
-                    <div class="heart" data-postid={{ post.id }} >
+                    <div class="heart" data-heartid={{ post.id }} >
                         {% if post|is_liked_by_user:user %}
                             <i class="fas fa-heart"></i>
                         {% else %}

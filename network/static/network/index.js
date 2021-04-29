@@ -1,17 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
     if (document.querySelector("body").dataset.title == "index") {
         document.querySelector("#publish").addEventListener('click', event => publishPost(event));
-        loadPosts('all');
+        // loadPosts('all');
         console.log('page loaded!');
-        document.querySelectorAll(".heart").forEach(function(item) {
-            item.onclick = function() {
-                postId = item.dataset.postid;
+        
+
+        document.querySelectorAll(".post-wrapper").forEach(item => {
+            let postId = item.dataset.postid;
+
+            let heart = item.querySelector(".heart");
+            heart.onclick = function() {
                 toggleLike(postId);
-            }
+            };
         });
-        // add eventlistener to hearts
-        // make clicking a heart log something on console
-        // make clicking a heart call the API to toggle like
+        
         
     }
 
@@ -104,6 +106,7 @@ function updateFollowButton(status) {
 }
 
 function toggleLike(postId) {
+    console.log(`toggling like of post ${postId}`);
     fetch(`/posts/like/${postId}`, {
         method: 'PUT'})
         .then(response => response.json())
@@ -113,7 +116,8 @@ function toggleLike(postId) {
 }
 
 function updateLikeButton(postId, status) {
-    likeButton = document.querySelector(`[data-postid="${postId}"]`);
+    let post = document.querySelector(`[data-postid="${postId}"]`);
+    let likeButton = post.querySelector(".heart");
     if (status.liked === true) {
         likeButton.innerHTML = '<i class="fas fa-heart"></i>';
         return;
