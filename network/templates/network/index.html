@@ -5,7 +5,7 @@
 {% block body %}
 <script src="{% static 'network/index.js' %}"></script>
 
-    <div id="post-form">
+    <div id="post-form" class="post-form">
         <!-- <form action="" method="post">
             {% csrf_token %}
             {{ post_form.body }}
@@ -14,7 +14,7 @@
         <form action="" method="post">
             {% csrf_token %}
             <textarea class="form-control" id="post-body" placeholder="Write your post here!"></textarea>
-            <input id="publish" type="submit" class="btn btn-primary" value="Publish"/>
+            <input id="publish" type="submit" class="btn btn-primary post-form-button" value="Publish"/>
         </form>
 
     </div>

@@ -276,7 +276,7 @@ def edit_post(request, post_id):
     post.body = new_body
     
     post.save()
-    print(post)
+    print(post, "saved")
     
     return JsonResponse(post.serialize(), safe=False)
     # return JsonResponse({"Received": "POST request received."}, status=200)

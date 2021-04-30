@@ -4,15 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // loadPosts('all');
         console.log('page loaded!');
         
-
-        document.querySelectorAll(".post-wrapper").forEach(item => {
-            let postId = item.dataset.postid;
-
-            let heart = item.querySelector(".heart");
-            heart.onclick = function() {
-                toggleLike(postId);
-            };
-        });
+        addButtonListeners();
         
         
     }
@@ -55,6 +47,123 @@ function renderPost(post) {
 
 //   document.querySelector('#js').append(content);
 }
+
+function addButtonListeners() {
+    document.querySelectorAll(".post-wrapper").forEach(item => {
+        let postId = item.dataset.postid;
+
+        let heart = item.querySelector(".heart");
+        heart.onclick = function() {
+            toggleLike(postId);
+        };
+
+        let options = item.querySelector(".post-options");
+        if (options != null) {
+            let editButton = options.querySelector(".post-edit");
+            editButton.onclick = function() {
+
+                closeEditPosts(); // Close any open post editors
+
+                postBody = item.querySelector(".post-body");
+                postEditSpace = item.querySelector(".post-body-edit");
+                postBodyContent = postBody.innerHTML;
+                postBody.style.display = "none";
+                
+                
+                let editPostForm = createEditPostForm();
+                input = editPostForm.querySelector('#edit-input');
+                input.value = postBodyContent;
+
+                // Hide edit button
+                editButton.style.display = "none";
+
+                
+                // add form to body
+                postEditSpace.appendChild(editPostForm);
+
+                console.log(postBodyContent);
+                // create an edit text box
+                // fill it with existing post content
+            };
+        }
+    });
+}
+
+function createEditPostForm() {
+    let form = document.createElement('form');
+    let formInput = document.createElement('textarea');
+    let cancelButton = document.createElement('span');
+    let submitButton = document.createElement('span');
+    form.appendChild(formInput);
+    form.className = 'post-form';
+    form.id = 'edit-post-form'
+    formInput.className = 'form-control';
+    formInput.id = 'edit-input';
+    cancelButton.className = 'btn btn-sm btn-secondary post-form-button';
+    cancelButton.innerText = 'Cancel';
+    submitButton.className = 'btn btn-sm btn-primary post-form-button';
+    submitButton.innerText = 'Submit';
+    form.appendChild(cancelButton);
+    form.appendChild(submitButton);
+
+    cancelButton.onclick = closeEditPosts; // I need to bypass the regular behavior of a button here
+    submitButton.onclick = submitEditPost;
+
+    return form;
+}
+
+function closeEditPosts() {
+    // Selecting all to ensure no more than 1 can be open at a time
+    document.querySelectorAll('#edit-post-form').forEach(form => {
+        post = form.closest('.post-wrapper');
+        postOptions = post.querySelector('.post-edit');
+        postBody = post.querySelector('.post-body');
+
+        // Unhide post body and edit button
+        postBody.style.display = 'block';
+        postOptions.style.display = 'block';
+
+        form.remove();
+    }); 
+    
+
+}
+
+function submitEditPost() {
+    form = document.querySelector('#edit-post-form');
+    post = form.closest('.post-wrapper');
+    postId = post.dataset.postid;
+    
+    fetch(`/posts/edit/${postId}`, {
+            method: "PUT",
+            body: JSON.stringify({
+                body: post.querySelector('#edit-input').value
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if ('error' in result){
+                return alert(result.error);
+            }
+
+            console.log(result);
+            updatePostFromEdit(post, result);
+            closeEditPosts();
+        });
+
+    
+    
+}
+
+function updatePostFromEdit(post, result){
+    postBody = post.querySelector(".post-body");
+    updatedText = result.body;
+    postBody.innerText = result.body;
+}
+
+
+
+
 
 
 //  Currently not in use

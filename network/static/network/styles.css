@@ -14,12 +14,16 @@ body {
     padding: 0 1rem;
 }
 
-#post-form {
+.btn + .btn {
+    margin-left: .5rem;
+}
+
+.post-form {
     margin: 1rem auto;
     text-align: right;
 }
 
-#publish {
+.post-form-button {
     margin-top: .7rem;
 }
 
@@ -52,6 +56,15 @@ body {
     border: 1px solid dodgerblue;
     padding: 0 .25rem;
     width: 100%;
+}
+
+.post-head {
+    display: flex;
+    justify-content: space-between;
+}
+
+.post-options {
+    color: 
 }
 
 .heart {
