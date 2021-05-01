@@ -269,7 +269,7 @@ def edit_post(request, post_id):
     try:
         post = Post.objects.get(pk=post_id, author=request.user.pk,)
     except Post.DoesNotExist:
-        return JsonResponse({"error": "Incorrect post ID or invalid user"}, status=400)
+        return JsonResponse({"error": "Invalid post ID or invalid user"}, status=400)
     
     data = json.loads(request.body)
     new_body = data.get("body", "")
@@ -280,3 +280,4 @@ def edit_post(request, post_id):
     
     return JsonResponse(post.serialize(), safe=False)
     # return JsonResponse({"Received": "POST request received."}, status=200)
+    

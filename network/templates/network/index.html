@@ -3,6 +3,11 @@
 
 
 {% block body %}
+{% if user.is_authenticated %}
+<script type="text/javascript">
+    var isAuth = "{{ user.is_authenticated }}";
+</script>
+{% endif %}
 <script src="{% static 'network/index.js' %}"></script>
 
     <div id="post-form" class="post-form">

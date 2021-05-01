@@ -46,6 +46,10 @@
               </ul>
             </div>
           </nav>
+
+        <script type="text/javascript">
+            var isAuth = "{{ user.is_authenticated }}";
+        </script>
         
         <div class="block-body">
             {% block body %}
