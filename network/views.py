@@ -201,7 +201,6 @@ def set_follow(request, username):
 @csrf_exempt
 @login_required
 def like_post(request, post_id):
-    print("liking post")
     
     if request.method != "PUT":
         return JsonResponse({"error": "PUT request required."}, status=400)
@@ -213,12 +212,14 @@ def like_post(request, post_id):
     if user.likes_post(post):
         try:
             like = Like.objects.get(user=user, post=post).delete()
+            post.update_likes()
         except Like.DoesNotExist:
                 return JsonResponse({"error": "No such like exists"}, status=404)
-        return JsonResponse({"message": "Unliked post successfully", "liked": False}, status=201)
+        return JsonResponse({"message": "Unliked post successfully", "liked": False, "likes": post.like_count}, status=201)
         
     like = Like.objects.create(user=user, post=post)
-    return JsonResponse({"message": "Liked post successfully", "liked": True}, status=201)
+    post.update_likes()
+    return JsonResponse({"message": "Liked post successfully", "liked": True, "likes": post.like_count}, status=201)
         
 
 def posts(request, type):
@@ -267,7 +268,7 @@ def edit_post(request, post_id):
         return JsonResponse({"error": "PUT request required."}, status=400)
     
     try:
-        post = Post.objects.get(pk=post_id, author=request.user.pk,)
+        post = Post.objects.get(pk=post_id, author=request.user.pk)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Invalid post ID or invalid user"}, status=400)
     
@@ -276,7 +277,6 @@ def edit_post(request, post_id):
     post.body = new_body
     
     post.save()
-    print(post, "saved")
     
     return JsonResponse(post.serialize(), safe=False)
     # return JsonResponse({"Received": "POST request received."}, status=200)

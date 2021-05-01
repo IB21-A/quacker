@@ -81,7 +81,6 @@ function addButtonListeners() {
 				// add form to body
 				postEditSpace.appendChild(editPostForm);
 
-				console.log(postBodyContent);
 				// create an edit text box
 				// fill it with existing post content
 			};
@@ -144,7 +143,6 @@ function submitEditPost() {
 				return alert(result.error);
 			}
 
-			console.log(result);
 			updatePostFromEdit(post, result);
 			closeEditPosts();
 		});
@@ -168,7 +166,7 @@ function publishPost(event) {
 	})
 		.then((response) => response.json())
 		.then((result) => {
-			console.log(result);
+		
 			loadPosts();
 		});
 }
@@ -182,7 +180,6 @@ function toggleFollow(event) {
 	})
 		.then((response) => response.json())
 		.then((status) => {
-			console.log(status);
 			updateFollowButton(status);
 			// Display a toast?
 		});
@@ -204,13 +201,22 @@ function updateFollowButton(status) {
 }
 
 function toggleLike(postId) {
-	console.log(`toggling like of post ${postId}`);
 	fetch(`/posts/like/${postId}`, {
 		method: "PUT",
 	})
 		.then((response) => response.json())
 		.then((status) => {
 			updateLikeButton(postId, status);
+            let post = getPostById(postId);
+            let like_count = post.querySelector('.like-count');
+
+            let output = ''
+            if (status.likes > 0) 
+                output = `${status.likes} like`;
+            if (status.likes > 1)
+                output += 's';
+            
+            like_count.innerText = output;
 		});
 }
 
@@ -225,3 +231,6 @@ function updateLikeButton(postId, status) {
 	likeButton.innerHTML = '<i class="far fa-heart"></i>';
 	return;
 }
+
+
+function getPostById(postId) { return document.querySelector(`[data-postid="${postId}"]`);}

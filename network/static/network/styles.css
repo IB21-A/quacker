@@ -63,8 +63,13 @@ body {
     justify-content: space-between;
 }
 
-.post-options {
-    color: 
+.post-footer {
+    display: flex;
+    margin-top: 1rem;
+}
+
+.post-likes {
+    margin-left: .5rem;
 }
 
 .heart {

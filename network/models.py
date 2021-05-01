@@ -5,7 +5,7 @@ from django.db import models
 class User(AbstractUser):
     username = models.CharField(max_length=40, unique=True)
     profile_photo = models.URLField(blank=True, null=True, default=None)
-    # likes
+    
     
     def is_following(self, followee):
         if self.following.filter(follower=self, followee=followee):
@@ -35,6 +35,11 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="posts", null=True)
     body = models.TextField(blank=False, null=False, max_length=280)
     timestamp = models.DateTimeField(auto_now_add=True, db_column='date_posted')
+    like_count = models.IntegerField(default=0, blank=False, null=False)
+    
+    def update_likes(self):
+        self.like_count = self.likes.all().count()
+        self.save()
     
     def serialize(self):
         return {
