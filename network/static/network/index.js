@@ -105,7 +105,7 @@ function createEditPostForm() {
 	form.appendChild(cancelButton);
 	form.appendChild(submitButton);
 
-	cancelButton.onclick = closeEditPosts; // I need to bypass the regular behavior of a button here
+	cancelButton.onclick = closeEditPosts; 
 	submitButton.onclick = submitEditPost;
 
 	return form;
@@ -221,7 +221,7 @@ function toggleLike(postId) {
 }
 
 function updateLikeButton(postId, status) {
-	let post = document.querySelector(`[data-postid="${postId}"]`);
+	let post = getPostById(postId);
 	let likeButton = post.querySelector(".heart");
 	if (status.liked === true) {
 		likeButton.innerHTML = '<i class="fas fa-heart"></i>';
