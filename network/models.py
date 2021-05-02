@@ -5,6 +5,10 @@ from django.db import models
 class User(AbstractUser):
     username = models.CharField(max_length=40, unique=True)
     profile_photo = models.URLField(blank=True, null=True, default=None)
+    follower_count = models.IntegerField(default=0, blank=False, null=False)
+    following_count = models.IntegerField(default=0, blank=False, null=False)
+    
+    
     
     
     def is_following(self, followee):
@@ -12,7 +16,6 @@ class User(AbstractUser):
             return True
         
         return False
-        
     
     def get_posts(self):
         return self.posts.all()
@@ -27,8 +30,33 @@ class User(AbstractUser):
         following = self.get_following()
         return Post.objects.filter(author__in=following)
     
+    # Returns object if user like exists
     def likes_post(self, post):
         return Like.objects.filter(user=self, post=post)
+        
+    #  Manage follower count
+    def increase_follower_count(self):
+        self.follower_count += 1
+        self.save()
+        
+    def decrease_follower_count(self):
+        self.follower_count -= 1
+        self.save()
+        
+    # Manager following count
+    def increase_following_count(self):
+        self.following_count += 1
+        self.save()
+        
+    def decrease_following_count(self):
+        self.following_count -= 1
+        self.save()
+        
+    # Used to update counts if needed. Not publicly available
+    def update_follower_following_count(self):
+        self.follower_count = self.followers.all().count()
+        self.following_count = self.following.all().count()
+        self.save()
         
     
 class Post(models.Model):
@@ -39,6 +67,14 @@ class Post(models.Model):
     
     def update_likes(self):
         self.like_count = self.likes.all().count()
+        self.save()
+        
+    def increase_like_count(self):
+        self.like_count += 1
+        self.save()
+        
+    def decrease_like_count(self):
+        self.like_count -= 1
         self.save()
     
     def serialize(self):

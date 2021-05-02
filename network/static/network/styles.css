@@ -75,3 +75,7 @@ body {
 .heart {
     color: red;
 }
+
+.post-pagination {
+    margin-top: 1rem;
+}

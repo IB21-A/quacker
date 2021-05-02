@@ -1,51 +1,53 @@
 {% load static %}
 {% block body %}
 {% load network_extras %}
-
-{% for post in page_obj %}
-        <div class="post-wrapper" data-postid={{ post.id }} >
-            <div class="post-profile-photo"><img src="{% static 'network/img/ducky_icon.gif' %}" alt="Profile Photo"></div>
-            <div class="post-content">
-                <div class="post-head">
-                    <div class="post-info">
-                        <span class="post-author"><a href="{%url 'profile' post.author.username %}">{{ post.author }}</a></span>
-                        <span class="post-timestamp">{{ post.timestamp|time_since_or_date }}</span>
-                    </div>
-                    {% if post.author.pk == request.user.pk %}
-                    <div class="post-options">
-                        <span class=post-edit><i class="fas fa-pencil-alt btn-link"></i></span>
-                        <!-- <span class=post-edit-cancel><i class="fas fa-times-circle"></i></span> -->
-                        
-                        <!-- <i class="fas fa-trash-alt"></i> -->
-                    </div>
-                    {% endif %}
-                </div>
-
-                <div class="post-body">{{ post.body }}</div>
-                <div class="post-body-edit"></div>
-                <div class="post-footer">
-                    <div class="heart" data-heartid={{ post.id }} >
-                        {% if user.is_authenticated and post|is_liked_by_user:user %}
-                            <i class="fas fa-heart"></i>
-                        {% else %}
-                            <i class="far fa-heart"></i>
+<div id="posts">
+    
+    {% for post in page_obj %}
+            <div class="post-wrapper" data-postid={{ post.id }} >
+                <div class="post-profile-photo"><img src="{% static 'network/img/ducky_icon.gif' %}" alt="Profile Photo"></div>
+                <div class="post-content">
+                    <div class="post-head">
+                        <div class="post-info">
+                            <span class="post-author"><a href="{%url 'profile' post.author.username %}">{{ post.author }}</a></span>
+                            <span class="post-timestamp">{{ post.timestamp|time_since_or_date }}</span>
+                        </div>
+                        {% if post.author.pk == request.user.pk %}
+                        <div class="post-options">
+                            <span class=post-edit><i class="fas fa-pencil-alt btn-link"></i></span>
+                            <!-- <span class=post-edit-cancel><i class="fas fa-times-circle"></i></span> -->
+    
+                            <!-- <i class="fas fa-trash-alt"></i> -->
+                        </div>
                         {% endif %}
                     </div>
-                    <div class="post-likes">
-                            <span class=like-count>
-                                {% if post.like_count > 0 %}
-                                    {{ post.like_count }} like{{ post.like_count|pluralize }}
-                                {% endif %}
-                            </span> 
+    
+                    <div class="post-body">{{ post.body }}</div>
+                    <div class="post-body-edit"></div>
+                    <div class="post-footer">
+                        <div class="heart" data-heartid={{ post.id }} >
+                            {% if user.is_authenticated and post|is_liked_by_user:user %}
+                                <i class="fas fa-heart"></i>
+                            {% else %}
+                                <i class="far fa-heart"></i>
+                            {% endif %}
+                        </div>
+                        <div class="post-likes">
+                                <span class=like-count>
+                                    {% if post.like_count > 0 %}
+                                        {{ post.like_count }} like{{ post.like_count|pluralize }}
+                                    {% endif %}
+                                </span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        {% empty %}
-        <div>
-            No posts!
-        </div>
-        {% endfor %}
+            {% empty %}
+            <div>
+                No posts!
+            </div>
+    {% endfor %}
+</div>
 <!--     
         <div class="pagination">
             <span class="step-links">
@@ -66,7 +68,7 @@
         </div> -->
     
         <nav aria-label="...">
-            <ul class="pagination justify-content-center">
+            <ul class="pagination justify-content-center post-pagination">
                 {% if page_obj.has_previous %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>

@@ -1,26 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-	if (document.querySelector("body").dataset.title == "index") {
-		document
-			.querySelector("#publish")
-			.addEventListener("click", (event) => publishPost(event));
-		// loadPosts('all');
-        if (isAuth == "True")
-            isAuth = true;
-
-		addButtonListeners();
-        
-	}
-
-	if (document.querySelector("body").dataset.title == "profile") {
-		console.log("do profile stuff");
-		document
-			.querySelector("#btn-follow")
-			.addEventListener("click", (event) => toggleFollow(event));
-	}
+	
+	if (isAuth == "True") isAuth = true;
+	// loadPosts('all');
+	addButtonListeners();
 });
 
 function loadPosts(type = "all") {
-	fetch(`posts/${type}`)
+	fetch(`/posts/${type}`)
 		.then((response) => response.json())
 		.then((posts) => {
 			posts.forEach((post) => {
@@ -52,40 +38,45 @@ function renderPost(post) {
 }
 
 function addButtonListeners() {
-	document.querySelectorAll(".post-wrapper").forEach((item) => {
-		let postId = item.dataset.postid;
 
-		let heart = item.querySelector(".heart");
-		heart.onclick = function () {
-			toggleLike(postId);
-		};
-
-		let options = item.querySelector(".post-options");
-		if (options != null) {
-			let editButton = options.querySelector(".post-edit");
-			editButton.onclick = function () {
-				closeEditPosts(); // Close any open post editors
-
-				postBody = item.querySelector(".post-body");
-				postEditSpace = item.querySelector(".post-body-edit");
-				postBodyContent = postBody.innerHTML;
-				postBody.style.display = "none";
-
-				let editPostForm = createEditPostForm();
-				input = editPostForm.querySelector("#edit-input");
-				input.value = postBodyContent;
-
-				// Hide edit button
-				editButton.style.display = "none";
-
-				// add form to body
-				postEditSpace.appendChild(editPostForm);
-
-				// create an edit text box
-				// fill it with existing post content
-			};
+	// If profile exists
+	try {
+		let profile = document.getElementById('profile');
+		if (profile) {
+			// Add Follow button functionality
+			document.querySelector("#btn-follow")
+				.addEventListener("click", (event) => toggleFollow(event));
 		}
-	});
+	} catch (e) {
+		console.log(e);
+	}
+
+	
+	// If a post-form exists
+	let postForm = document.getElementById('post-form');
+	if (postForm) {
+		document
+			.querySelector("#publish")
+			.addEventListener("click", (event) => publishPost(event));
+
+	}
+
+	// If posts exist
+	let posts = document.getElementById('posts');
+	if (posts) {
+		document.querySelectorAll(".post-wrapper").forEach((item) => {
+			let postId = item.dataset.postid;
+	
+			// Like Button
+			let heart = item.querySelector(".heart");
+			heart.onclick = function () {
+				toggleLike(postId);
+			};
+	
+			// Edit Post Button
+			addOptionsToItem(item);
+		});
+	}
 }
 
 function createEditPostForm() {
@@ -105,10 +96,36 @@ function createEditPostForm() {
 	form.appendChild(cancelButton);
 	form.appendChild(submitButton);
 
-	cancelButton.onclick = closeEditPosts; 
+	cancelButton.onclick = closeEditPosts;
 	submitButton.onclick = submitEditPost;
 
 	return form;
+}
+
+function addOptionsToItem(item) {
+	let options = item.querySelector(".post-options");
+	if (options != null) {
+		let editButton = options.querySelector(".post-edit");
+		
+		editButton.onclick = function () {
+			closeEditPosts(); // Close any open post editors
+
+			postBody = item.querySelector(".post-body");
+			postEditSpace = item.querySelector(".post-body-edit");
+			postBodyContent = postBody.innerHTML;
+			postBody.style.display = "none";
+
+			let editPostForm = createEditPostForm();
+			input = editPostForm.querySelector("#edit-input");
+			input.value = postBodyContent;
+
+			// Hide edit button
+			editButton.style.display = "none";
+
+			// add form to body
+			postEditSpace.appendChild(editPostForm);
+		};
+	}
 }
 
 function closeEditPosts() {
@@ -166,7 +183,6 @@ function publishPost(event) {
 	})
 		.then((response) => response.json())
 		.then((result) => {
-		
 			loadPosts();
 		});
 }
@@ -174,13 +190,14 @@ function publishPost(event) {
 function toggleFollow(event) {
 	event.preventDefault();
 
-	username = document.querySelector("#username").innerHTML;
+	var username = document.querySelector("#username").innerHTML;
 	fetch(`/follow/${username}`, {
 		method: "PUT",
 	})
 		.then((response) => response.json())
 		.then((status) => {
 			updateFollowButton(status);
+			updateFollowCounts(username);
 			// Display a toast?
 		});
 }
@@ -207,16 +224,14 @@ function toggleLike(postId) {
 		.then((response) => response.json())
 		.then((status) => {
 			updateLikeButton(postId, status);
-            let post = getPostById(postId);
-            let like_count = post.querySelector('.like-count');
+			let post = getPostById(postId);
+			let like_count = post.querySelector(".like-count");
 
-            let output = ''
-            if (status.likes > 0) 
-                output = `${status.likes} like`;
-            if (status.likes > 1)
-                output += 's';
-            
-            like_count.innerText = output;
+			let output = "";
+			if (status.likes > 0) output = `${status.likes} like`;
+			if (status.likes > 1) output += "s";
+
+			like_count.innerText = output;
 		});
 }
 
@@ -232,5 +247,24 @@ function updateLikeButton(postId, status) {
 	return;
 }
 
+function updateFollowCounts(username) {
+	fetch(`/${username}/get-follow-counts`)
+		.then((response) => response.json())
+		.then((result) => {
+			let followingCount = document.querySelector('#following-count');
+			let followerCount = document.querySelector('#followers-count');
+			
+			followingCount.innerText = result.following;
 
-function getPostById(postId) { return document.querySelector(`[data-postid="${postId}"]`);}
+			followerCountText = `${result.followers} Follower`;
+			if (result.followers != 1)
+				followerCountText += 's';
+
+			followerCount.innerText = followerCountText;
+
+		});
+}
+
+function getPostById(postId) {
+	return document.querySelector(`[data-postid="${postId}"]`);
+}

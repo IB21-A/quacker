@@ -82,7 +82,7 @@ def quack(request):
 def profile_view(request, username):
     user = User.objects.get(id=request.user.pk)
     try:
-        profile = User.objects.get(username=username)
+        profile = get_user_by_username(username)
     except User.DoesNotExist:
         raise Http404("Profile does not exist")
     
@@ -180,23 +180,38 @@ def get_posts(request, type):
 @csrf_exempt
 @login_required
 def set_follow(request, username):
+    if request.method != "PUT":
+        return JsonResponse({"error": "PUT request required."}, status=400)
+    
     try:
-        followee = User.objects.get(username=username)
+        followee = get_user_by_username(username)
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found."}, status=404)
     
-    if request.method == "PUT":
-        user = User.objects.get(id=request.user.pk)
-        if user.is_following(followee):
-            try:
-                follow = Follow.objects.get(followee=followee, follower=user).delete()
-            except Follow.DoesNotExist:
-                return JsonResponse({"error": "No such follow exists"}, status=404)
-                
-            return JsonResponse({"message": "Unfollowed successfully", "following": False}, status=201)
+    user = User.objects.get(id=request.user.pk)
+    if user.is_following(followee):
+        try:
+            follow = Follow.objects.get(followee=followee, follower=user).delete()
+            user.decrease_following_count()
+            followee.decrease_follower_count()
+        except Follow.DoesNotExist:
+            return JsonResponse({"error": "No such follow exists"}, status=404)
             
-        follow = Follow.objects.create(followee=followee, follower=user)
-        return JsonResponse({"message": "Followed successfully", "following": True}, status=201)
+        return JsonResponse({"message": "Unfollowed successfully", "following": False}, status=201)
+        
+    follow = Follow.objects.create(followee=followee, follower=user)
+    user.increase_following_count()
+    followee.increase_follower_count()
+    
+    return JsonResponse({"message": "Followed successfully", "following": True}, status=201)
+
+@csrf_exempt
+def get_follow_counts(request, username):
+    profile = get_user_by_username(username)
+    followers = profile.follower_count
+    following = profile.following_count
+    return JsonResponse({"followers": followers, "following": following}, status=201)
+    
     
 @csrf_exempt
 @login_required
@@ -212,13 +227,13 @@ def like_post(request, post_id):
     if user.likes_post(post):
         try:
             like = Like.objects.get(user=user, post=post).delete()
-            post.update_likes()
+            post.decrease_like_count()
         except Like.DoesNotExist:
                 return JsonResponse({"error": "No such like exists"}, status=404)
         return JsonResponse({"message": "Unliked post successfully", "liked": False, "likes": post.like_count}, status=201)
         
     like = Like.objects.create(user=user, post=post)
-    post.update_likes()
+    post.increase_like_count()
     return JsonResponse({"message": "Liked post successfully", "liked": True, "likes": post.like_count}, status=201)
         
 
@@ -281,3 +296,6 @@ def edit_post(request, post_id):
     return JsonResponse(post.serialize(), safe=False)
     # return JsonResponse({"Received": "POST request received."}, status=200)
     
+
+def get_user_by_username(username):
+    return User.objects.get(username=username)
