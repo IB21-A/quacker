@@ -1,14 +1,19 @@
 {% extends "network/layout.html" %}
 {% load static %}
+{% load network_extras %}
 
 {% block body %}
 <script src="{% static 'network/index.js' %}"></script>
 <div id="profile">
     <h1><span id="username">{{profile.username}}</span>'s Profile</h1>
-    <div><span id="following-count">{{ following.count }}</span> Following  | <span id="followers-count">{{ followers.count }} Followers</span> </div>
-    
+    <div class="profile-info">
+        <div class="profile-photo"><img src="{% static 'network/img/ducky_icon.gif' %}" alt="Profile Photo"></div>
+        <div class="profile_statistics"><span id="following-count">{{ following.count }}</span> Following  | 
+            <span id="followers-count">{{ followers.count }} Followers</span> 
+        </div>
+    </div>
     {% if request.user != profile %}
-        {% if is_following %}
+        {% if request.user|is_following_user:profile.username %}
         <button id="btn-follow" class="btn btn-secondary" type="submit" name="unfollow" value="Unfollow">Unfollow</button>
         {% else %}
         <button id="btn-follow" class="btn btn-primary" type="submit" name="follow" value="Follow">Follow</button>

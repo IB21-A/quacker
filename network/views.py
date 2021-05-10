@@ -78,9 +78,10 @@ def quack(request):
     new_post.save()
     
     
-@login_required
+
 def profile_view(request, username):
-    user = User.objects.get(id=request.user.pk)
+    # user = User.objects.get(id=request.user.pk)
+
     try:
         profile = get_user_by_username(username)
     except User.DoesNotExist:
@@ -96,7 +97,7 @@ def profile_view(request, username):
         "profile": profile,
         "followers": profile.get_followers(),
         "following": profile.get_following(),
-        "is_following": user.is_following(profile),
+        # "is_following": user.is_following(profile),
         "posts": posts,
         "page_obj": page_obj,
         "data_title": "profile"

@@ -55,9 +55,9 @@ function addButtonListeners() {
 	// If a post-form exists
 	let postForm = document.getElementById('post-form');
 	if (postForm) {
-		document
-			.querySelector("#publish")
-			.addEventListener("click", (event) => publishPost(event));
+		// document
+		// 	.querySelector("#publish")
+		// 	.addEventListener("click", (event) => publishPost(event));
 
 	}
 
@@ -106,7 +106,7 @@ function addOptionsToItem(item) {
 	let options = item.querySelector(".post-options");
 	if (options != null) {
 		let editButton = options.querySelector(".post-edit");
-		
+
 		editButton.onclick = function () {
 			closeEditPosts(); // Close any open post editors
 

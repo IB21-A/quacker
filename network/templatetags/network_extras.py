@@ -23,3 +23,18 @@ def time_since_or_date(timestamp):
         return naturaltime(timestamp)
     
     return timestamp.strftime('%b %d')
+
+# Returns true if user is following a supplied username
+@register.filter(name='is_following_user')
+def is_following(user, username):
+    try:
+        username = User.objects.get(username=username)
+        is_following = user.is_following(username)
+    except User.DoesNotExist:
+        return False
+    except AttributeError: 
+        return False
+        
+    return is_following
+        
+    
