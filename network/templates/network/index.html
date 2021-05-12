@@ -8,6 +8,7 @@
 {% endif %}
 <script src="{% static 'network/index.js' %}"></script>
 
+    {% if user.is_authenticated %}
     <div id="post-form" class="post-form">
         <!-- <form action="" method="post">
             {% csrf_token %}
@@ -22,7 +23,7 @@
         </form>
 
     </div>
-
+    {% endif %}
 
     {% include "network/posts.html" %}
 

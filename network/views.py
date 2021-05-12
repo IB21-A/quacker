@@ -298,5 +298,14 @@ def edit_post(request, post_id):
     # return JsonResponse({"Received": "POST request received."}, status=200)
     
 
+@csrf_exempt
+def verify_login(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Login Required"}, status=400)
+    
+    return JsonResponse({"User": request.user.username}, status=200)
+    
+    
+    
 def get_user_by_username(username):
     return User.objects.get(username=username)

@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
 	
-	if (isAuth == "True") isAuth = true;
-	// loadPosts('all');
 	addButtonListeners();
 });
 
@@ -52,7 +50,7 @@ function addButtonListeners() {
 	}
 
 	
-	// If a post-form exists
+	// If a post-form exists on page
 	let postForm = document.getElementById('post-form');
 	if (postForm) {
 		// document
@@ -118,12 +116,15 @@ function addOptionsToItem(item) {
 			let editPostForm = createEditPostForm();
 			input = editPostForm.querySelector("#edit-input");
 			input.value = postBodyContent;
+			
 
 			// Hide edit button
 			editButton.style.display = "none";
 
 			// add form to body
 			postEditSpace.appendChild(editPostForm);
+			input.style.height = 'auto';
+			input.style.height = input.scrollHeight + 'px';
 		};
 	}
 }
@@ -172,23 +173,26 @@ function updatePostFromEdit(post, result) {
 }
 
 //  Currently not in use
-function publishPost(event) {
-	// event.preventDefault(); // prevents form submission reloading current page
+// function publishPost(event) {
+// 	// event.preventDefault(); // prevents form submission reloading current page
 
-	fetch("/posts", {
-		method: "POST",
-		body: JSON.stringify({
-			body: document.querySelector("#post-body").value,
-		}),
-	})
-		.then((response) => response.json())
-		.then((result) => {
-			loadPosts();
-		});
-}
+// 	fetch("/posts", {
+// 		method: "POST",
+// 		body: JSON.stringify({
+// 			body: document.querySelector("#post-body").value,
+// 		}),
+// 	})
+// 		.then((response) => response.json())
+// 		.then((result) => {
+// 			loadPosts();
+// 		});
+// }
 
 function toggleFollow(event) {
 	event.preventDefault();
+	if (isAuth != "True") {
+		location.href = '/login';
+	}
 
 	var username = document.querySelector("#username").innerHTML;
 	fetch(`/follow/${username}`, {
@@ -198,7 +202,7 @@ function toggleFollow(event) {
 		.then((status) => {
 			updateFollowButton(status);
 			updateFollowCounts(username);
-			// Display a toast?
+			
 		});
 }
 
@@ -218,6 +222,10 @@ function updateFollowButton(status) {
 }
 
 function toggleLike(postId) {
+	if (isAuth != "True") {
+		location.href = '/login';
+	}
+
 	fetch(`/posts/like/${postId}`, {
 		method: "PUT",
 	})
@@ -264,6 +272,14 @@ function updateFollowCounts(username) {
 
 		});
 }
+
+// function ensureLogin() {
+// 	fetch('/check')
+// 		.then(response => {
+// 			if (response.status != 200)
+// 				location.href = '/login';
+// 		});
+// }
 
 function getPostById(postId) {
 	return document.querySelector(`[data-postid="${postId}"]`);

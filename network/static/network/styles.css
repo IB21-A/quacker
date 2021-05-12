@@ -40,9 +40,9 @@ body {
     margin-top: .7rem;
 }
 
-.post-wrapper + .post-wrapper {
+/* .post-wrapper + .post-wrapper {
     margin-top: .5rem;
-}
+} */
 
 .post-wrapper {
     background-color: white;
@@ -55,6 +55,7 @@ body {
     display: flex;
     flex-direction: row;
 
+    margin-top: .5rem;
     padding: .5em;
 }
 
