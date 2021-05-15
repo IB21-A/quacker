@@ -39,8 +39,6 @@ def index(request):
     })
     
 
-# TODO there HAS to be a better way to do this, I'm just too tired to think of it right now.
-# For now, getting a minimum viable product going here, displaying posts from following
 def following_posts_view(request):
     if request.method == "POST":
         user = User.objects.get(id=request.user.pk)
@@ -50,7 +48,6 @@ def following_posts_view(request):
             new_post = post_form.save()
             return HttpResponseRedirect(reverse("index"))
     
-    # quack(request)  # Used to populate the feed with quacks
     post_form = NewPostForm
     
     user = User.objects.get(pk=request.user.pk)
@@ -59,7 +56,7 @@ def following_posts_view(request):
     # organize posts in chronological order
     posts = posts.order_by("-timestamp").all()
     
-    paginator = Paginator(posts, 5) # Show 5 posts per page
+    paginator = Paginator(posts, 10) # Show 10 posts per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
@@ -71,17 +68,15 @@ def following_posts_view(request):
     })
     
 
-# Make posts from back end
+# Populate posts from back end
 def quack(request):
     user = User.objects.get(pk=2)
     new_post = Post(author=user, body="QUACK!")
     new_post.save()
-    
+
     
 
 def profile_view(request, username):
-    # user = User.objects.get(id=request.user.pk)
-
     try:
         profile = get_user_by_username(username)
     except User.DoesNotExist:
@@ -97,7 +92,6 @@ def profile_view(request, username):
         "profile": profile,
         "followers": profile.get_followers(),
         "following": profile.get_following(),
-        # "is_following": user.is_following(profile),
         "posts": posts,
         "page_obj": page_obj,
         "data_title": "profile"
@@ -186,13 +180,16 @@ def set_follow(request, username):
     
     try:
         followee = get_user_by_username(username)
+        user = User.objects.get(id=request.user.pk)
+        if user == followee:
+            return JsonResponse({"error": "User cannot follow themself"}, status=404)
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found."}, status=404)
     
-    user = User.objects.get(id=request.user.pk)
+    # user = User.objects.get(id=request.user.pk)
     if user.is_following(followee):
         try:
-            follow = Follow.objects.get(followee=followee, follower=user).delete()
+            Follow.objects.get(followee=followee, follower=user).delete()
             user.decrease_following_count()
             followee.decrease_follower_count()
         except Follow.DoesNotExist:
@@ -200,7 +197,7 @@ def set_follow(request, username):
             
         return JsonResponse({"message": "Unfollowed successfully", "following": False}, status=201)
         
-    follow = Follow.objects.create(followee=followee, follower=user)
+    Follow.objects.create(followee=followee, follower=user)
     user.increase_following_count()
     followee.increase_follower_count()
     
@@ -222,7 +219,6 @@ def like_post(request, post_id):
         return JsonResponse({"error": "PUT request required."}, status=400)
     
     user = User.objects.get(id=request.user.pk)
-    # TODO add try/catch to post exists
     post = Post.objects.get(id=post_id)
     
     if user.likes_post(post):
@@ -233,7 +229,7 @@ def like_post(request, post_id):
                 return JsonResponse({"error": "No such like exists"}, status=404)
         return JsonResponse({"message": "Unliked post successfully", "liked": False, "likes": post.like_count}, status=201)
         
-    like = Like.objects.create(user=user, post=post)
+    Like.objects.create(user=user, post=post)
     post.increase_like_count()
     return JsonResponse({"message": "Liked post successfully", "liked": True, "likes": post.like_count}, status=201)
         
@@ -266,9 +262,7 @@ def publish(request):
     # Get contents of post
     body = data.get("body", "")
     user = User.objects.get(id=request.user.pk)
-    # initial_data = Post(author=user, body=body)
-    # post_form = NewPostForm(instance=initial_data)
-    # print(body)
+ 
     post = Post(author=user, body=body)
     post.save()
 
@@ -295,7 +289,6 @@ def edit_post(request, post_id):
     post.save()
     
     return JsonResponse(post.serialize(), safe=False)
-    # return JsonResponse({"Received": "POST request received."}, status=200)
     
 
 @csrf_exempt

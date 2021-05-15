@@ -15,9 +15,6 @@
                         {% if post.author.pk == request.user.pk %}
                         <div class="post-options">
                             <span class=post-edit><i class="fas fa-pencil-alt btn-link"></i></span>
-                            <!-- <span class=post-edit-cancel><i class="fas fa-times-circle"></i></span> -->
-    
-                            <!-- <i class="fas fa-trash-alt"></i> -->
                         </div>
                         {% endif %}
                     </div>
@@ -48,25 +45,7 @@
             </div>
     {% endfor %}
 </div>
-<!--     
-        <div class="pagination">
-            <span class="step-links">
-                {% if page_obj.has_previous %}
-                    <a href="?page=1">&laquo; first</a>
-                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-                {% endif %}
-    
-                <span class="current">
-                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                </span>
-    
-                {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}">next</a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-                {% endif %}
-            </span>
-        </div> -->
-    
+
         <nav aria-label="...">
             <ul class="pagination justify-content-center post-pagination">
                 {% if page_obj.has_previous %}
@@ -86,14 +65,6 @@
     
                     {% endfor %}
                 {% endif %}
-              <!-- <li class="page-item"><a class="page-link" href="#">1</a></li>
-              <li class="page-item active" aria-current="page">
-                <span class="page-link">
-                  2
-                  <span class="sr-only">(current)</span>
-                </span>
-              </li>
-              <li class="page-item"><a class="page-link" href="#">3</a></li> -->
     
               {% if page_obj.has_next %}
               <li class="page-item">

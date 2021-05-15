@@ -24,15 +24,6 @@ function renderPost(post) {
   <div class="post-timestamp">${post.timestamp}</div>
   `;
 
-	// <div class="post-wrapper">
-	// <div class="post-profile-photo"><img src="{% static 'network/img/ducky_icon.gif' %}" alt="Profile Photo"></div>
-	// <div class="post-content">
-	//     <a href="{%url 'profile' post.author.username %}">{{ post.author }}</a> says {{ post.body }} on {{ post.timestamp }}
-	//     <div class="heart"><i class="fas fa-heart"><i class="far fa-heart"></i></i></div>
-	// </div>
-	// </div>
-
-	//   document.querySelector('#js').append(content);
 }
 
 function addButtonListeners() {
@@ -41,23 +32,15 @@ function addButtonListeners() {
 	try {
 		let profile = document.getElementById('profile');
 		if (profile) {
-			// Add Follow button functionality
-			document.querySelector("#btn-follow")
-				.addEventListener("click", (event) => toggleFollow(event));
+			// Add Follow button functionality if button exists
+			let followButton = document.querySelector("#btn-follow");
+			if (followButton)
+				followButton.addEventListener("click", (event) => toggleFollow(event));
 		}
 	} catch (e) {
 		console.log(e);
 	}
 
-	
-	// If a post-form exists on page
-	let postForm = document.getElementById('post-form');
-	if (postForm) {
-		// document
-		// 	.querySelector("#publish")
-		// 	.addEventListener("click", (event) => publishPost(event));
-
-	}
 
 	// If posts exist
 	let posts = document.getElementById('posts');
@@ -65,39 +48,14 @@ function addButtonListeners() {
 		document.querySelectorAll(".post-wrapper").forEach((item) => {
 			let postId = item.dataset.postid;
 	
-			// Like Button
 			let heart = item.querySelector(".heart");
 			heart.onclick = function () {
 				toggleLike(postId);
 			};
 	
-			// Edit Post Button
 			addOptionsToItem(item);
 		});
 	}
-}
-
-function createEditPostForm() {
-	let form = document.createElement("form");
-	let formInput = document.createElement("textarea");
-	let cancelButton = document.createElement("span");
-	let submitButton = document.createElement("span");
-	form.appendChild(formInput);
-	form.className = "post-form";
-	form.id = "edit-post-form";
-	formInput.className = "form-control";
-	formInput.id = "edit-input";
-	cancelButton.className = "btn btn-sm btn-secondary post-form-button";
-	cancelButton.innerText = "Cancel";
-	submitButton.className = "btn btn-sm btn-primary post-form-button";
-	submitButton.innerText = "Submit";
-	form.appendChild(cancelButton);
-	form.appendChild(submitButton);
-
-	cancelButton.onclick = closeEditPosts;
-	submitButton.onclick = submitEditPost;
-
-	return form;
 }
 
 function addOptionsToItem(item) {
@@ -127,6 +85,29 @@ function addOptionsToItem(item) {
 			input.style.height = input.scrollHeight + 'px';
 		};
 	}
+}
+
+function createEditPostForm() {
+	let form = document.createElement("form");
+	let formInput = document.createElement("textarea");
+	let cancelButton = document.createElement("span");
+	let submitButton = document.createElement("span");
+	form.appendChild(formInput);
+	form.className = "post-form";
+	form.id = "edit-post-form";
+	formInput.className = "form-control";
+	formInput.id = "edit-input";
+	cancelButton.className = "btn btn-sm btn-secondary post-form-button";
+	cancelButton.innerText = "Cancel";
+	submitButton.className = "btn btn-sm btn-primary post-form-button";
+	submitButton.innerText = "Submit";
+	form.appendChild(cancelButton);
+	form.appendChild(submitButton);
+
+	cancelButton.onclick = closeEditPosts;
+	submitButton.onclick = submitEditPost;
+
+	return form;
 }
 
 function closeEditPosts() {
@@ -171,22 +152,6 @@ function updatePostFromEdit(post, result) {
 	updatedText = result.body;
 	postBody.innerText = result.body;
 }
-
-//  Currently not in use
-// function publishPost(event) {
-// 	// event.preventDefault(); // prevents form submission reloading current page
-
-// 	fetch("/posts", {
-// 		method: "POST",
-// 		body: JSON.stringify({
-// 			body: document.querySelector("#post-body").value,
-// 		}),
-// 	})
-// 		.then((response) => response.json())
-// 		.then((result) => {
-// 			loadPosts();
-// 		});
-// }
 
 function toggleFollow(event) {
 	event.preventDefault();
@@ -272,14 +237,6 @@ function updateFollowCounts(username) {
 
 		});
 }
-
-// function ensureLogin() {
-// 	fetch('/check')
-// 		.then(response => {
-// 			if (response.status != 200)
-// 				location.href = '/login';
-// 		});
-// }
 
 function getPostById(postId) {
 	return document.querySelector(`[data-postid="${postId}"]`);

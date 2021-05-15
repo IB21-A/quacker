@@ -8,9 +8,6 @@ class User(AbstractUser):
     follower_count = models.IntegerField(default=0, blank=False, null=False)
     following_count = models.IntegerField(default=0, blank=False, null=False)
     
-    
-    
-    
     def is_following(self, followee):
         if self.following.filter(follower=self, followee=followee):
             return True
