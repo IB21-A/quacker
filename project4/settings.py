@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
-
+import django_heroku
 import os
 from dotenv import load_dotenv
 
@@ -27,7 +27,7 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['quacker-app-thom.herokuapp.com', '127.0.0.1',]
+ALLOWED_HOSTS = ['quacker-app-thom.herokuapp.com', '127.0.0.1','0.0.0.0', 'localhost',]
 
 
 # Application definition
@@ -127,8 +127,9 @@ STATIC_URL = '/static/'
 
 # Extra places for collect static to find static files.
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, '/network/static'),
+    os.path.join(BASE_DIR, 'project4/static'),
 )
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 LOGGING = {
     'version': 1,
@@ -172,3 +173,5 @@ LOGGING = {
 
 MEDIA_URL = '/img/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/img')
+
+django_heroku.settings(locals())
